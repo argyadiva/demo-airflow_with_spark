@@ -1,3 +1,7 @@
 pyspark==3.1.2
 pymongo
 kagglehub
+pandas
+requests
+SQLAlchemy
+psycopg2-binary

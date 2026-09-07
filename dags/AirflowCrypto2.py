@@ -2,8 +2,7 @@ import datetime as dt
 from datetime import timedelta
 
 from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.bash import BashOperator
 
 
 default_args = {
@@ -20,13 +19,18 @@ with DAG('coin_scrapper2',
          catchup=False,
          ) as dag:
 
-    # install_library = BashOperator(task_id='install_library',
-    #                            bash_command='python /opt/airflow/dags/extract2.py')
-    echo_java = BashOperator(task_id='echo_java',
-                               bash_command='sudo -u airflow whoami')
-    echo_path = BashOperator(task_id='echo_path',
-                               bash_command='sudo -u airflow python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.getOrCreate()"')
+    project_root = '{{ task.dag.folder }}/..'
+
+    echo_java = BashOperator(
+        task_id='echo_java',
+        bash_command='whoami',
+        cwd=project_root,
+    )
+    echo_path = BashOperator(
+        task_id='echo_path',
+        bash_command='python -c "from pyspark.sql import SparkSession; spark = SparkSession.builder.getOrCreate()"',
+        cwd=project_root,
+    )
     
 
 echo_java >> echo_path
-# install_library

@@ -2,8 +2,7 @@ import datetime as dt
 from datetime import timedelta
 
 from airflow import DAG
-from airflow.operators.bash_operator import BashOperator
-from airflow.operators.python_operator import PythonOperator
+from airflow.operators.bash import BashOperator
 
 
 default_args = {
@@ -20,9 +19,23 @@ with DAG('rmt_005_crypto_etl',
          catchup=False,
          ) as dag:
 
-    python_extract = BashOperator(task_id='python_extract', bash_command='sudo -u airflow python /opt/airflow/scripts/extract.py')
-    python_transform = BashOperator(task_id='python_transform', bash_command='sudo -u airflow python /opt/airflow/scripts/transform.py')
-    python_load = BashOperator(task_id='python_load', bash_command='sudo -u airflow python /opt/airflow/scripts/load.py')
+    project_root = '{{ task.dag.folder }}/..'
+
+    python_extract = BashOperator(
+        task_id='python_extract',
+        bash_command='python scripts/extract.py',
+        cwd=project_root,
+    )
+    python_transform = BashOperator(
+        task_id='python_transform',
+        bash_command='python scripts/transform.py',
+        cwd=project_root,
+    )
+    python_load = BashOperator(
+        task_id='python_load',
+        bash_command='python scripts/load.py',
+        cwd=project_root,
+    )
     
 
 python_extract >> python_transform >> python_load

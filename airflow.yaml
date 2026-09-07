@@ -2,6 +2,7 @@ x-common:
   &common
   image: airflow-spark
   user: "${AIRFLOW_UID}:0"
+  working_dir: /opt/airflow
   env_file: 
     - .env
   volumes:
@@ -63,6 +64,6 @@ services:
     command:
       - -c
       - |
-        mkdir -p /sources/logs /sources/dags /sources/plugins
-        chown -R "${AIRFLOW_UID}:0" /sources/{logs,dags,plugins}
+        mkdir -p /opt/airflow/logs /opt/airflow/data /opt/airflow/plugins
+        chown -R "${AIRFLOW_UID}:0" /opt/airflow/{logs,data,plugins}
         exec /entrypoint airflow version

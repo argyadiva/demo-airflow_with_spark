@@ -3,6 +3,12 @@ __pycache__/
 dags/__pycache__/
 *.py[cod]
 
+# Local configuration and generated runtime data
+.env
+data/*.csv
+logs/*
+!logs/.gitkeep
+
 # C extensions
 *.so
 

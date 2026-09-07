@@ -1,15 +1,26 @@
+import os
+
 import pandas as pd
-import psycopg2
 from sqlalchemy import create_engine
+from sqlalchemy.engine import URL
 
-DB_CONFIG = {
-    'host': 'ep-snowy-art-a17wausj-pooler.ap-southeast-1.aws.neon.tech',
-    'database': 'group001',
-    'user': 'neondb_owner',
-    'password': 's9URtWjSK6IT',
-    'port': '5432'
-}
-engine = create_engine(f"postgresql://{DB_CONFIG['user']}:{DB_CONFIG['password']}@{DB_CONFIG['host']}:{DB_CONFIG['port']}/{DB_CONFIG['database']}", connect_args={'sslmode': "require"})
 
-df = pd.read_csv('/opt/airflow/data/transform_result_crypto_pipeline.csv')
+def required_env(name):
+    value = os.getenv(name)
+    if not value:
+        raise RuntimeError(f'Missing required environment variable: {name}')
+    return value
+
+
+db_url = URL.create(
+    drivername='postgresql+psycopg2',
+    username=required_env('DB_USER'),
+    password=required_env('DB_PASSWORD'),
+    host=required_env('DB_HOST'),
+    port=int(os.getenv('DB_PORT', '5432')),
+    database=required_env('DB_NAME'),
+)
+engine = create_engine(db_url, connect_args={'sslmode': 'require'})
+
+df = pd.read_csv('data/transform_result_crypto_pipeline.csv')
 df.to_sql(name='crypto_price', con=engine, if_exists="append", index=False)
