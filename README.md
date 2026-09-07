@@ -9,6 +9,12 @@ docker build -t airflow-spark .
 docker compose -f airflow.yaml up -d
 ```
 
+To stop the project:
+
+```text
+docker compose -f airflow.yaml down
+```
+
 The Airflow DAG runs the three layers in order:
 
 ```text
