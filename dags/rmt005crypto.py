@@ -1,4 +1,5 @@
 import datetime as dt
+import os
 from datetime import timedelta
 
 from airflow import DAG
@@ -19,23 +20,23 @@ with DAG('rmt_005_crypto_etl',
          catchup=False,
          ) as dag:
 
-    project_root = '{{ task.dag.folder }}/..'
+    project_root = os.environ.get('AIRFLOW_HOME', '/opt/airflow')
 
-    python_extract = BashOperator(
-        task_id='python_extract',
-        bash_command='python scripts/extract.py',
+    bronze = BashOperator(
+        task_id='bronze',
+        bash_command='python scripts/bronze.py',
         cwd=project_root,
     )
-    python_transform = BashOperator(
-        task_id='python_transform',
-        bash_command='python scripts/transform.py',
+    silver = BashOperator(
+        task_id='silver',
+        bash_command='python scripts/silver.py',
         cwd=project_root,
     )
-    python_load = BashOperator(
-        task_id='python_load',
-        bash_command='python scripts/load.py',
+    gold = BashOperator(
+        task_id='gold',
+        bash_command='python scripts/gold.py',
         cwd=project_root,
     )
     
 
-python_extract >> python_transform >> python_load
+bronze >> silver >> gold

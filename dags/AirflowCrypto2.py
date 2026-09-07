@@ -1,4 +1,5 @@
 import datetime as dt
+import os
 from datetime import timedelta
 
 from airflow import DAG
@@ -19,7 +20,7 @@ with DAG('coin_scrapper2',
          catchup=False,
          ) as dag:
 
-    project_root = '{{ task.dag.folder }}/..'
+    project_root = os.environ.get('AIRFLOW_HOME', '/opt/airflow')
 
     echo_java = BashOperator(
         task_id='echo_java',

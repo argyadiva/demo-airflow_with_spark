@@ -1,9 +1,9 @@
 FROM apache/airflow:2.3.4
 
-# Install Java (OpenJDK 8 or 11 depending on your preference)
+# Install the Java runtime required by PySpark.
 USER root
 RUN apt-get update && \
-    apt-get install -y openjdk-11-jdk && \
+    apt-get install -y --no-install-recommends openjdk-11-jre-headless && \
     apt-get clean;
 
 # Set JAVA_HOME environment variable
