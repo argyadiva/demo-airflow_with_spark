@@ -1,12 +1,10 @@
 FROM apache/airflow:2.3.4
 
-# Install the Java runtime required by PySpark.
-# Debian 11 (bullseye) sudah EOL: arahkan apt ke archive.debian.org.
+# Install Java (OpenJDK 8 or 11 depending on your preference)
 USER root
-RUN printf 'deb [check-valid-until=no] http://archive.debian.org/debian bullseye main\n' > /etc/apt/sources.list && \
-    sed -i 's/^deb /#deb /' /etc/apt/sources.list.d/*.list 2>/dev/null || true && \
-    apt-get update && \
-    apt-get install -y --no-install-recommends openjdk-11-jre-headless && \
+RUN echo "deb http://archive.debian.org/debian bullseye main" > /etc/apt/sources.list && \
+    apt-get update -o Acquire::Check-Valid-Until=false && \
+    apt-get install -y openjdk-11-jdk && \
     apt-get clean;
 
 # Set JAVA_HOME environment variable
